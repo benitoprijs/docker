@@ -1,5 +1,5 @@
 #!/bin/sh
-alias docker='sudo docker'
+# alias docker='sudo docker'
 
 # start default containers
 # jenkins
