@@ -25,7 +25,7 @@ RUN \
   mkdir -p /opt/xebialabs/xl-release
 
 # Add XLRelease package
-ADD https://trials.xebialabs.com/xldownload/download/xlrelease-3.0.4-server.zip /opt/xebialabas/xl-release/
+ADD https://trials.xebialabs.com/xldownload/download/xlrelease-3.0.4-server.zip /opt/xebialabs/xl-release/
 #ADD ./xlrelease-3.0.4-server.zip /opt/xebialabs/xl-release/
 #ADD ./Dockerfile /opt/xebialabs/xl-release/
 #ADD ./test.txt /opt/xebialabs/xl-release/
