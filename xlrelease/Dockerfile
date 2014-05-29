@@ -1,25 +1,14 @@
 #
-# Java Dockerfile
+# XL-Release Dockerfile
 #
-# https://github.com/dockerfile/java
+# https://github.com/rickpeters/docker/xlrelease
 #
-
-# Pull base image.
+# version 0.5
+#
+# Pull base image, this already contains the java prerequisite.
 FROM dockerfile/java
 
-# Install Java.
-#RUN \
-#  echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
-#  echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections && \
-#  add-apt-repository -y ppa:webupd8team/java && \
-#  apt-get update && \
-#  apt-get install -y oracle-java7-installer
-
-# Define mountable directories.
-VOLUME ["/data"]
-
-# Define working directory
-WORKDIR /data
+MAINTAINER Rick Peters rick.peters@kadaster.nl
 
 RUN \
   mkdir -p /opt/xebialabs/xl-release
@@ -30,21 +19,40 @@ ADD https://trials.xebialabs.com/xldownload/download/xlrelease-3.0.4-server.zip 
 #ADD ./xlrelease-3.0.4-server.zip /opt/xebialabs/xl-release/
 
 # define settings
-ENV XL_RELEASE_SERVER_HOME /opt/xebialabs/xl-release
+ENV XL_RELEASE_SERVER_HOME /opt/xebialabs/xl-release/xlrelease-server
 
-# Add XLRelease temporary licensfile
-ADD ./xl-release-license.lic $XL_RELEASE_SERVER_HOME/conf/
-
+# unzip current version of xl-release and create generic symbolic link
+# to current version
+# clean up install package
 RUN \
   cd /opt/xebialabs/xl-release && \
   unzip xlrelease-3.0.4-server.zip && \
+  ln -s xlrelease-3.0.4-server/ xlrelease-server && \
   rm xlrelease-3.0.4-server.zip
+
+# Add XLRelease temporary licensefile
+# not directly in destination since this is a symbolic link
+ADD ./xl-release-license.lic /opt/xebialabs/xl-release/
+
+# Put license in correct location
+RUN \
+  mv /opt/xebialabs/xl-release/xl-release-license.lic /opt/xebialabs/xl-release/xlrelease-server/conf/
+
+# Define mountable directories.
+VOLUME ["/data"]
+
+# Define working directory
+WORKDIR /data
 
 # Expose default xl-release port
 EXPOSE 5516
 
-# Image is ready for running install, since this is interactive we need to run the container and then continue
-# And commit afterwards
+# Define default CMD.
+# in this way running the container without command will just start XL-Release
+CMD ["/opt/xebialabs/xl-release/xlrelease-server/bin/server.sh"]
 
-# Define default command.
-CMD ["bash"]
+# Image is ready for running install, since this is interactive we need to run the container and then continue
+# And commit afterwards to be able to create the final container
+# the committed inage can then be started by default at the exposed port
+# no persistency is implemented yet
+
