@@ -1,113 +1,62 @@
 #XL-Release dockerimage
-De dockerfile maakt een image wat geschikt is om de interactieve installatie mee uit te voeren.
-De licensefile moet in de docker context geplaatst worden en wordt in de image geplaatst
+De dockerfile maakt een image wat geschikt is om een unattended install uit te voeren, die een filebased repository op een persistent volume aanmaakt. Vervolgens kan een container worden gestart op deze persistent repository en XLRelease getest worden.
 
 ## Gebruik van het image
 
 Nadat het image kant klaar is kan het eenvoudig gestart worden:
 
-`docker run -d --name xl-release -P [REPOSITORY[:TAG]] /opt/xebialabs/xl-release/xlrelease-server/bin/server.sh`
-
-De tussentijdse niet geïnstalleerde image kan indien gewenst verwijderd worden.
-
-Om te controleren of XL-Release al gestart is:
-
-`docker logs xl-release`
-## Bouw van het image:
-
-Bouw van het uiteindelijke image kan niet uitsluitend met een dockerfile, dit wordt veroorzaakt doordat de XL-Release installatie een interactief onderdeel kent.
-Onderstaande instructie laten zien hoe een correct geïnstalleerd XL-Release image gemaakt kan worden. De eerste stap is het maken van een basis image waarmee de interactieve installatie kan worden uitgevoerd:
- 
-`docker build --rm -t [REPOSITORY[:TAG]] .`
-
-Het installeren van XL-release kan vervolgens met
-
-```
-docker run -i -t [REPOSITORY[:TAG]] /bin/bash
-
-cd /opt/xebialabs/xl-release/xlrelease-server/bin
-
-./server.sh -setup
-```
-
-volg de instructies voor installatie
-
-Na installatie kan de container worden verlaten en moet deze gecommit worden naar een nieuw image
-
-`docker commit -m "geinstalleerde XL-release" CONTAINER [REPOSITORY[:TAG]]`
-
-## image met repository persistency
-* Een volume /repository toegevoegd
-* dit volume gelinkt aan de host /tmp/repository (in de boot2docker vm)
-
-	`docker run -i -t -v /tmp/repository:/repository rick/xl-release-p:0.9 /bin/bash`
-
-* installatie uitgevoerd op deze repository
-
-	`./server.sh -setup`
-	* geen simple install
-	* geen ssl
-	* let op kies poort 5516
-	* repository op /repository
-	* repository niet initialiseren (dat mislukt, doen we in aparte stap)
-
-Nu is de container klaar om tot image verheven te worden (zie boven)
-
-Deze nieuwe image kan gestart worden als hierboven, maar met de toevoeging van de volume mount.
-Let op dat de .lock file in de repository directory weg is.
-
-Starten van het eindimage en opstarten van xl-release gaat met:
-
-`docker run -d --name xl-release-p -P -v /tmp/repository:/repository [REPOSITORY[:TAG]] /opt/xebialabs/xl-release/xlrelease-server/bin/server.sh`
-
-### maken van de initiele repository (niet nodig als deze er al is)
-* repository initialiseren
-
-	`./server.sh -setup -reinitialize`	
-
-	LET OP TODO: op dit tussenimage kan ook met een Dockerfile het CMD worden aangepast zodat de image gestart kan worden zonder commando op te geven
-	Of de gewijzgide bestanden uit de conf directory extern halen en in de dockerfile met ADD toevoegen
-	
-	TODO 2: de tijd in de container is verkeerd
-	
-* unattended install
-
-	`https://support.xebialabs.com/entries/23468241-automatic-setup-of-3-8-4`
-	
-* let op: grote probleem is dat de repo directory nog niet mag bestaan, het moet dus een subdirectory van het persistent volume zijn :-(
-
-### installatie van een nieuwe instantie met persistent disk
-ik weet nog niet waar de persistent data van de vm zit?
-de peristent directory moet al bestaan in de scope van de dockerhost
-
-```
-docker run -i -t -P -v /tmp/repository:/repository rick/xl-release-p /bin/bash
-
-cd /opt/xebialabs/xl-release/xlrelease-server
-
-./bin/server.sh -setup -reinitialize -force -setup-defaults ../xlrelease-defaults.properties
-```
-dit moet ook in één keer kunnen met:
-
-```
-docker run -i -t -P -v /tmp/repository:/repository rick/xl-release-p /opt/xebialabs/xl-release/xlrelease-server/bin/server.sh -setup -reinitialize -force -setup-defaults /opt/xebialabs/xl-release/xlrelease-defaults.properties
-```
-### starten van de nieuwe instantie
-starten van de server zit in het default cmd
-
 ```
 docker run -d --name xl-release-p -P -v /tmp/repository:/repository rick/xl-release-p
 ```
 
-met een ENTRYPOINT kan dit ook, maar dat heeft als nadeel dat ik geen gewone CMD meer kan uitvoeren op de container
+Het default ```CMD``` van het image is het ```server.sh``` commando van xlrelease.
 
--> kan wel met `--entrypoint=""` 
-
-Helemaal externe conf file kan ook als deze beschikbaar is in het persisted volume (dat kun je aanwijzen met de -setup-defaults)
-Het huidige image is daarmee prachtig
-
-Image exporteren
+Om te controleren of XL-Release al gestart is:
 
 ```
-docker save rick/xl-release-p:latest > xl-release-p-image.tar
+docker logs xl-release
 ```
+
+XLRelease exposed binnen de container de standaard poort 5516, met `docker ps` kan gecontroleerd worden welke poort dit is op de dockerhost.
+
+## Initialisatie nieuwe repository
+Dit gebeurt door interactief een container te maken die de unattended install uitvoert en de persistent repository aanmaakt. Bij het updaten van het image is dit niet meer nodig (de repository wordt overschreven) de installatie wordt silent en impliciet uitgevoerd tijdens het bouwen van het image
+
+```
+docker run -i -t -P -v /tmp/repository:/repository rick/xl-release-p /opt/xebialabs/xl-release/xlrelease-server/bin/server.sh -setup -reinitialize -force -setup-defaults /opt/xebialabs/xl-release/xlrelease-defaults.properties
+```
+
+## Bouw van het image:
+
+Om het image te kunnen voorzien van je eigen licentie en te gebruiken installatie defaults moet een image worden gebouwd. In de context directory (waar de Dockerfile staat) moeten de juiste versies staan van de volgende bestanden:
+
+* `xl-release-license.lic`
+* `xlrelease-defaults.properties`
+
+Deze beide bestanden worden geinjecteerd door de ```Dockerfile``` in het image.
+
+Bouw van het image:
+ 
+```
+docker build --rm -t [REPOSITORY[:TAG]] .
+```
+
+Het image heeft een volume ```/repository``` waar je eigen persistent volume aan gekoppeld kan worden met ```docker run -v```
+
+## Nieuwe versie van het image
+Als er een nieuwe versie van XL-Release komt dan moet het image opnieuw gebouwd worden en ook XL-Release opnieuw geïnstalleerd, de repository moet niet opnieuw worden aangemaakt, wat betekent dat de `-reinitialize` niet wordt meegegeven bij de installatie
+
+## aanloggen in het image
+Omdat het image als `ENTRYPOINT` het server.sh script van XL-Release heeft kan er niet zonder meer een interactieve container worden gestart om in de installatie te kunnen kijken. Dit is wel mogelijk door de `--entrypoint="/bin/bash"` optie mee te geven bij de start.
+
+```
+docker run -i -t --entrypoint="/bin/bash" [REPOSITORY[:TAG]]
+```
+
+### Image exporteren
+
+```
+docker save [REPOSITORY[:tag]] > [tarfile]
+```
+
+Technische Documentatie en projecthistorie: [link](projectlog.md)

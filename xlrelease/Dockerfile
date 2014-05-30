@@ -4,8 +4,10 @@
 # https://github.com/rickpeters/docker/xlrelease
 #
 # version 0.5
-# version 0.6 external volume for repository on /data
+# version 0.6 external volume for repository on /repository
+# version 0.7 create server.sh as default CMD for easy startup of container
 #
+
 # Pull base image, this already contains the java prerequisite.
 FROM dockerfile/java
 
@@ -43,8 +45,9 @@ RUN \
 ADD xlrelease-defaults.properties /opt/xebialabs/xl-release/
 
 # Start unattended installation
-# This will only install xlrelease and not create the initial repository
+# This will only install xlrelease and not really create the initial repository
 # since the volume does not exist yet
+# it is however important to make sure that XLRelease in the image already is installed
 RUN \
   cd /opt/xebialabs/xl-release/xlrelease-server && \
   ./bin/server.sh -setup -reinitialize -force -setup-defaults ../xlrelease-defaults.properties
