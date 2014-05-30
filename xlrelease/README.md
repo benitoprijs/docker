@@ -47,11 +47,14 @@ Het image heeft een volume ```/repository``` waar je eigen persistent volume aan
 Als er een nieuwe versie van XL-Release komt dan moet het image opnieuw gebouwd worden en ook XL-Release opnieuw geïnstalleerd, de repository moet niet opnieuw worden aangemaakt, wat betekent dat de `-reinitialize` niet wordt meegegeven bij de installatie
 
 ## aanloggen in het image
-Omdat het image als `ENTRYPOINT` het server.sh script van XL-Release heeft kan er niet zonder meer een interactieve container worden gestart om in de installatie te kunnen kijken. Dit is wel mogelijk door de `--entrypoint="/bin/bash"` optie mee te geven bij de start.
+Omdat het image als `CMD` het server.sh script van XL-Release heeft kan er niet zonder meer een interactieve container worden gestart om in de installatie te kunnen kijken. Dit is wel mogelijk door de `/bin/bash` achter het opstart commando te plaatsen.
 
 ```
-docker run -i -t --entrypoint="/bin/bash" [REPOSITORY[:TAG]]
+docker run -i -t [REPOSITORY[:TAG]] /bin/bash
 ```
+
+## aandachtspunten bij gebruik boot2docker
+De persistent volume is een volume in de context van de boot2docker vm en niet binnen het OS waar boot2docker draait. Betekent dat je met `boot2docker ssh` aan moet loggen aan de vm en vervolgens een directory aan moet maken die aan de docker container gekoppeld wordt (bijv. /tmp/repository)
 
 ### Image exporteren
 
