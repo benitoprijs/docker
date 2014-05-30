@@ -4,6 +4,7 @@
 # https://github.com/rickpeters/docker/xlrelease
 #
 # version 0.5
+# version 0.6 external volume for repository on /data
 #
 # Pull base image, this already contains the java prerequisite.
 FROM dockerfile/java
@@ -29,7 +30,7 @@ RUN \
   unzip xlrelease-3.0.4-server.zip && \
   ln -s xlrelease-3.0.4-server/ xlrelease-server && \
   rm xlrelease-3.0.4-server.zip
-
+  
 # Add XLRelease temporary licensefile
 # not directly in destination since this is a symbolic link
 ADD ./xl-release-license.lic /opt/xebialabs/xl-release/
@@ -38,8 +39,19 @@ ADD ./xl-release-license.lic /opt/xebialabs/xl-release/
 RUN \
   mv /opt/xebialabs/xl-release/xl-release-license.lic /opt/xebialabs/xl-release/xlrelease-server/conf/
 
+# Add installation defaults
+ADD xlrelease-defaults.properties /opt/xebialabs/xl-release/
+
+# Start unattended installation
+# This will only install xlrelease and not create the initial repository
+# since the volume does not exist yet
+RUN \
+  cd /opt/xebialabs/xl-release/xlrelease-server && \
+  ./bin/server.sh -setup -reinitialize -force -setup-defaults ../xlrelease-defaults.properties
+
 # Define mountable directories.
 VOLUME ["/data"]
+VOLUME ["/repository"]
 
 # Define working directory
 WORKDIR /data
@@ -51,8 +63,6 @@ EXPOSE 5516
 # in this way running the container without command will just start XL-Release
 CMD ["/opt/xebialabs/xl-release/xlrelease-server/bin/server.sh"]
 
-# Image is ready for running install, since this is interactive we need to run the container and then continue
-# And commit afterwards to be able to create the final container
-# the committed inage can then be started by default at the exposed port
-# no persistency is implemented yet
-
+# Image is ready for running xlrelease
+# it is important to mount the parent of the repo directory on
+# the /repository volume

@@ -2,11 +2,23 @@
 De dockerfile maakt een image wat geschikt is om de interactieve installatie mee uit te voeren.
 De licensefile moet in de docker context geplaatst worden en wordt in de image geplaatst
 
-Bouw het image:
+## Gebruik van het image
 
+Nadat het image kant klaar is kan het eenvoudig gestart worden:
+
+`docker run -d --name xl-release -P [REPOSITORY[:TAG]] /opt/xebialabs/xl-release/xlrelease-server/bin/server.sh`
+
+De tussentijdse niet geïnstalleerde image kan indien gewenst verwijderd worden.
+
+Om te controleren of XL-Release al gestart is:
+
+`docker logs xl-release`
+## Bouw van het image:
+
+Bouw van het uiteindelijke image kan niet uitsluitend met een dockerfile, dit wordt veroorzaakt doordat de XL-Release installatie een interactief onderdeel kent.
+Onderstaande instructie laten zien hoe een correct geïnstalleerd XL-Release image gemaakt kan worden. De eerste stap is het maken van een basis image waarmee de interactieve installatie kan worden uitgevoerd:
+ 
 `docker build --rm -t [REPOSITORY[:TAG]] .`
-
-	LETOP TODO: installatie met als entrypoint server.sh lukt niet, na de installatie is de container nog niet helemaal klaar en blijft bij de run in de installatie hangen?
 
 Het installeren van XL-release kan vervolgens met
 
@@ -22,14 +34,41 @@ Na installatie kan de container worden verlaten en moet deze gecommit worden naa
 
 `docker commit -m "geinstalleerde XL-release" CONTAINER [REPOSITORY[:TAG]]`
 
-	LETOP TODO: vervelend genoeg verdwijnt door de commit het oorspronkelijke default command?
+## image met repository persistency
+* Een volume /repository toegevoegd
+* dit volume gelinkt aan de host /tmp/repository (in de boot2docker vm)
 
-Met dit geinstalleerde image kan vervolgens XL-release gestart worden:
+	`docker run -i -t -v /tmp/repository:/repository rick/xl-release-p:0.9 /bin/bash`
 
-`docker run -d --name xl-release -P [REPOSITORY[:TAG]] /opt/xebialabs/xl-release/xlrelease-server/bin/server.sh`
+* installatie uitgevoerd op deze repository
 
-De tussentijdse niet geïnstalleerde image kan indien gewenst verwijderd worden.
+	`./server.sh -setup`
+	* geen simple install
+	* geen ssl
+	* let op kies poort 5516
+	* repository op /repository
+	* repository niet initialiseren (dat mislukt, doen we in aparte stap)
 
-Om te controleren of XL-Release al gestart is:
+Nu is de container klaar om tot image verheven te worden (zie boven)
 
-`docker logs xl-release`
+Deze nieuwe image kan gestart worden als hierboven, maar met de toevoeging van de volume mount.
+Let op dat de .lock file in de repository directory weg is.
+
+Starten van het eindimage en opstarten van xl-release gaat met:
+
+`docker run -d --name xl-release-p -P -v /tmp/repository:/repository [REPOSITORY[:TAG]] /opt/xebialabs/xl-release/xlrelease-server/bin/server.sh`
+
+### maken van de initiele repository (niet nodig als deze er al is)
+* repository initialiseren
+
+	`./server.sh -setup -reinitialize`	
+
+	LET OP TODO: op dit tussenimage kan ook met een Dockerfile het CMD worden aangepast zodat de image gestart kan worden zonder commando op te geven
+	Of de gewijzgide bestanden uit de conf directory extern halen en in de dockerfile met ADD toevoegen
+	
+	TODO 2: de tijd in de container is verkeerd
+	
+* unattended install
+	`https://support.xebialabs.com/entries/23468241-automatic-setup-of-3-8-4`
+	
+* let op: grote probleem is dat de repo directory nog niet mag bestaan, het moet dus een subdirectory van het persistent volume zijn :-(
