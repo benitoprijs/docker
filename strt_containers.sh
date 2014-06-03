@@ -7,10 +7,10 @@ docker run -d -p 8081:8080 --name jenkins aespinosa/jenkins
 
 # rabbitmq
 # kijk met docker logs rabbitmq naar het huidige wachtwoord
-docker run -d -p 15672:15672 -p 5672:5672 --name rabbitmq2 tutum/rabbitmq
+docker run -d -p 15672:15672 -p 5672:5672 --name rabbitmq tutum/rabbitmq
 
 # wordpress
-docker run -d -p 80:80 --name wordpress2 tutum/wordpress
+docker run -d -p 80:80 --name wordpress tutum/wordpress
 
 # jenkins pipeline demo
 docker run -d -p 8080:8080 --name jenkins_pipeline -v /var/run/docker.sock:/var/run/docker.sock cloudbees/jenkins
