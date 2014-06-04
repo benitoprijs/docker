@@ -1,7 +1,9 @@
 docker
 ======
 
-repo voor docker trials
+## interesting links
+Better way to create docker images
+* https://github.com/ianmiell/shutit
 
 ##Remove all containers
 
