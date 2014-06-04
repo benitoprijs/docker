@@ -4,7 +4,8 @@ docker
 ## interesting links
 Better way to create docker images
 * https://github.com/ianmiell/shutit
-Osx docker Solution with osx filesystem mount (vagrant)
+
+osx docker Solution with osx filesystem mount (vagrant)
 * https://github.com/liip/dockerbox
 
 ##Remove all containers
