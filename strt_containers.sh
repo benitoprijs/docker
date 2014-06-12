@@ -24,5 +24,8 @@ docker run -d -p 9000:9000 --name dockerui -v /var/run/docker.sock:/docker.sock 
 # shellinabox
 docker run -d --name shellinabox -p 4200:4200 moul/shellinabox 
 
+# gitlab
+docker run --name=gitlab -d -v /var/appdata/gitlab/data:/home/git/data -p 10022:22 -p 10080:80 -e "GITLAB_PORT=10080" -e "GITLAB_SSH_PORT=10022" sameersbn/gitlab
+
 # show all running containers
 docker ps

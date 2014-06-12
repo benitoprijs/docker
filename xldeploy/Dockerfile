@@ -34,11 +34,11 @@ RUN \
   
 # Add XLDeploy licensefile
 # not directly in destination since this is a symbolic link
-ADD ./xl-deploy-license.lic /opt/xebialabs/xl-deploy/
+ADD ./deployit-license.lic /opt/xebialabs/xl-deploy/
 
 # Put license in correct location
 RUN \
-  mv /opt/xebialabs/xl-deploy/xl-deploy-license.lic /opt/xebialabs/xl-deploy/xldeploy-server/conf/
+  mv /opt/xebialabs/xl-deploy/deployit-license.lic /opt/xebialabs/xl-deploy/xldeploy-server/conf/
 
 # Add installation defaults
 ADD xldeploy-defaults.properties /opt/xebialabs/xl-deploy/
