@@ -27,5 +27,9 @@ docker run -d --name shellinabox -p 4200:4200 moul/shellinabox
 # gitlab
 docker run --name=gitlab -d -v /var/appdata/gitlab/data:/home/git/data -p 10022:22 -p 10080:80 -e "GITLAB_PORT=10080" -e "GITLAB_SSH_PORT=10022" sameersbn/gitlab
 
+# neo4j
+# priviliged mode werkt niet in docker 1.0 misschien wel als lxc wordt gebruikt ipv libcontainer
+#docker run -d --privileged -p 7474:7474 --name neo4j tpires/neo4j
+
 # show all running containers
 docker ps

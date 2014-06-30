@@ -3,7 +3,7 @@
 #
 # https://github.com/rickpeters/docker/xldeploy
 #
-# version 0.5
+# version 0.6
 #
 
 # Pull base image, this already contains the java prerequisite.
@@ -18,7 +18,7 @@ RUN \
 # cannot do this through online download, because this needs credentials
 # ADD https://trials.xebialabs.com/xldownload/download/xlrelease-3.0.4-server.zip /opt/xebialabs/xl-release/
 # below is local version of adding resource already downloaded
-ADD ./xl-deploy-4.0.1-server.zip /opt/xebialabs/xl-deploy/
+ADD ./xl-deploy-4.1.0-beta-1-server.zip /opt/xebialabs/xl-deploy/
 
 # define settings
 ENV XL_DEPLOY_SERVER_HOME /opt/xebialabs/xl-deploy/xldeploy-server
@@ -28,9 +28,9 @@ ENV XL_DEPLOY_SERVER_HOME /opt/xebialabs/xl-deploy/xldeploy-server
 # clean up install package
 RUN \
   cd /opt/xebialabs/xl-deploy && \
-  unzip xl-deploy-4.0.1-server.zip && \
-  ln -s xl-deploy-4.0.1-server/ xldeploy-server && \
-  rm xl-deploy-4.0.1-server.zip
+  unzip xl-deploy-4.1.0-beta-1-server.zip && \
+  ln -s xl-deploy-4.1.0-beta-1-server/ xldeploy-server && \
+  rm xl-deploy-4.1.0-beta-1-server.zip
   
 # Add XLDeploy licensefile
 # not directly in destination since this is a symbolic link
