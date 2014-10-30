@@ -44,7 +44,7 @@ docker build --rm -t [REPOSITORY[:TAG]] .
 Het image heeft een volume ```/repository``` waar je eigen persistent volume aan gekoppeld kan worden met ```docker run -v```
 
 ## Nieuwe versie van het image
-Als er een nieuwe versie van XL-Release komt dan moet het image opnieuw gebouwd worden en ook XL-Release opnieuw geïnstalleerd, de repository moet niet opnieuw worden aangemaakt, wat betekent dat de `-reinitialize` niet wordt meegegeven bij de installatie
+Als er een nieuwe versie van XL-Release komt dan moet het image opnieuw gebouwd worden en ook XL-Release opnieuw geïnstalleerd, bij het bouwen van de image wordt een herinstallatie gedaan op een interne (docker local) repository. Na het bouwen van de image kan er opnieuw een container worden gestart die gekoppeld wordt aan de bestaande repository van de installatie.
 
 ## aanloggen in het image
 Omdat het image als `CMD` het server.sh script van XL-Release heeft kan er niet zonder meer een interactieve container worden gestart om in de installatie te kunnen kijken. Dit is wel mogelijk door de `/bin/bash` achter het opstart commando te plaatsen.
