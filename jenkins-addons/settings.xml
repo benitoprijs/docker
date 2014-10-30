@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd"> 
+ <servers>
+ </servers>
+ 
+ <localRepository>/usr/share/maven-repo</localRepository>
+ <interactiveMode>false</interactiveMode>
+ <offline>false</offline>
+ <pluginGroups>
+  <pluginGroup>nl.kadaster.maven.plugins</pluginGroup>
+ </pluginGroups>
+ <mirrors>
+  <mirror>
+   <id>Nexus</id>
+   <mirrorOf>*</mirrorOf>
+   <url>http://mvnrepository.so.kadaster.nl:8081/nexus/content/groups/public</url>
+  </mirror>
+ </mirrors>
+ 
+ <profiles>
+  <profile>
+   <id>Nexus</id>
+   <repositories>
+    <repository>
+     <id>central</id>
+     <url>http://central</url>
+     <releases>
+      <enabled>true</enabled>
+     </releases>
+     <snapshots>
+      <enabled>true</enabled>
+     </snapshots>
+    </repository>
+   </repositories>
+   <pluginRepositories>
+    <pluginRepository>
+     <id>central</id>
+     <url>http://central</url>
+     <releases>
+      <enabled>true</enabled>
+     </releases>
+     <snapshots>
+      <enabled>true</enabled>
+     </snapshots>
+    </pluginRepository>
+   </pluginRepositories>
+  </profile>
+ </profiles>
+ 
+ <activeProfiles>
+  <activeProfile>Nexus</activeProfile>
+ </activeProfiles>
+</settings>
+
