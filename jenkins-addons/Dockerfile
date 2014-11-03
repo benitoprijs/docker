@@ -13,10 +13,10 @@ RUN apt-get update && apt-get install -y maven && rm -rf /var/lib/apt/lists/*
 ADD install_jenkins_plugin.sh /usr/local/bin/install_jenkins_plugin.sh
 
 USER jenkins
-RUN ["/usr/local/bin/install_jenkins_plugin.sh", "github", "github-oauth", "cucumber-reports", "delivery-pipeline-plugin", "deployit-plugin"]
+RUN ["/usr/local/bin/install_jenkins_plugin.sh", "github", "github-oauth", "cucumber-reports", "delivery-pipeline-plugin", "deployit-plugin", "envinject", "git-parameter"]
 
 # create maven repo directory
-RUN ["mkdir", "/var/jenkins_home/maven"]
+#RUN ["mkdir", "/var/jenkins_home/maven"]
 
 USER root
 # configure maven settings
