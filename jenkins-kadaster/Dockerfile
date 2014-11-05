@@ -17,6 +17,11 @@ ENV https_proxy www-proxy.cs.kadaster.nl:8082
 ENV ftp_proxy   www-proxy.cs.kadaster.nl:8082
 ENV no_proxy    127.0.0.1, localhost, .so.kadaster.nl, .cs.kadaster.nl
 
+# create generic logfile for use by jenkins
+RUN \
+  touch /var/log/jenkins.log \
+  && chown jenkins:jenkins /var/log/jenkins.log
+
 RUN curl -L http://updates.jenkins-ci.org/download/war/$JENKINS_VERSION/jenkins.war -o /usr/share/jenkins/jenkins.war \
   && cd /tmp && zip -g /usr/share/jenkins/jenkins.war WEB-INF/init.groovy.d/tcp-slave-angent-port.groovy && rm -rf /tmp/WEB-INF
 
