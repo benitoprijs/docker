@@ -1,4 +1,4 @@
-H1 why building the supported Jenkins image again?
+# why building the supported Jenkins image again?
 This image 'enhances' the jenkins supported dockerhub image by enabling the jenkins build
 behing a corporate firewall
 
