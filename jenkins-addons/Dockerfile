@@ -16,7 +16,9 @@ ADD install_jenkins_plugin.sh /usr/local/bin/install_jenkins_plugin.sh
 
 # install plugins as user jenkins
 USER jenkins
-RUN ["/usr/local/bin/install_jenkins_plugin.sh", "github", "github-oauth", "cucumber-reports", "delivery-pipeline-plugin", "deployit-plugin"] 
+RUN ["/usr/local/bin/install_jenkins_plugin.sh", "github", "github-oauth", "cucumber-reports", "delivery-pipeline-plugin", "deployit-plugin"]
+# plugins that are not definitive yet, to speed up docker file build proces
+RUN ["/usr/local/bin/install_jenkins_plugin.sh", "disk-usage"]
 
 USER root
 # configure maven settings
@@ -26,5 +28,19 @@ RUN chown -R jenkins:jenkins /usr/share/maven-repo
 # set some settings so we don't have to manually
 ADD hudson.tasks.Maven.xml /var/jenkins_home/hudson.tasks.Maven.xml
 RUN chown jenkins:jenkins /var/jenkins_home/hudson.tasks.Maven.xml
+# copy default config.xml with LDAP placeholder LDAPGROUP which has to be set using
+# environment variable on docker run command
+ADD config.xml /var/jenkins_home/config.xml
+RUN chown jenkins:jenkins /var/jenkins_home/config.xml
+# insert default jenkins startup script
+ADD start-jenkins.sh /usr/local/bin/start-jenkins.sh
+# insert default credentials
+ADD credentials.xml /var/jenkins_home/credentials.xml
+RUN chown jenkins:jenkins /var/jenkins_home/credentials.xml
 
-USER jenkins
+# change user back to jenkins to make sure the container starts with this user
+#USER jenkins
+
+# start customized start script, this will set the default
+# authorization group and run jenkins process as user jenkins
+CMD ["usr/local/bin/start-jenkins.sh"]

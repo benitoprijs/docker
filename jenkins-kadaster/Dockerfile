@@ -35,6 +35,10 @@ RUN curl -L http://updates.jenkins-ci.org/download/war/$JENKINS_VERSION/jenkins.
 ENV JENKINS_HOME /var/jenkins_home
 RUN usermod -m -d "$JENKINS_HOME" jenkins && chown -R jenkins "$JENKINS_HOME"
 
+# perform generic proxy settings for jenkins itself
+COPY proxy.xml $JENKINS_HOME/proxy.xml
+RUN chown jenkins "$JENKINS_HOME/proxy.xml"
+
 # create generic mountable jobs directory
 # this has to be done before the VOLUME instruction
 # to be able to set and keep the uid:gid on these directory's
@@ -53,6 +57,7 @@ EXPOSE 8080
 # will be used by attached slave agents:
 EXPOSE 50000
 
+# set default user for container when running and place startup script
 USER jenkins
 COPY jenkins.sh /usr/local/bin/jenkins.sh
 
