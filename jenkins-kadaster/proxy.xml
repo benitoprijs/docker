@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<proxy>
+  <name>www-proxy.cs.kadaster.nl</name>
+  <port>8082</port>
+  <noProxyHost>*.cs.kadaster.nl
+*.so.kadaster.nl</noProxyHost>
+</proxy>

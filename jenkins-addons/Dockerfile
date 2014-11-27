@@ -19,6 +19,7 @@ USER jenkins
 RUN ["/usr/local/bin/install_jenkins_plugin.sh", "github", "github-oauth", "cucumber-reports", "delivery-pipeline-plugin", "deployit-plugin"]
 # plugins that are not definitive yet, to speed up docker file build proces
 RUN ["/usr/local/bin/install_jenkins_plugin.sh", "disk-usage"]
+RUN ["/usr/local/bin/install_jenkins_plugin.sh", "nodejs"]
 
 USER root
 # configure maven settings
