@@ -1,0 +1,7 @@
+.DS_Store
+*.zip
+*.md5
+*.tar
+*.lic
+*.gz
+wordpress/*
