@@ -5,17 +5,61 @@
   <numExecutors>2</numExecutors>
   <mode>NORMAL</mode>
   <useSecurity>true</useSecurity>
-  <authorizationStrategy class="hudson.security.AuthorizationStrategy$Unsecured"/>
-  <securityRealm class="hudson.security.SecurityRealm$None"/>
+  <authorizationStrategy class="hudson.security.GlobalMatrixAuthorizationStrategy">
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Create:{{groupname}}</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Delete:{{groupname}}</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.ManageDomains:{{groupname}}</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Update:{{groupname}}</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.View:{{groupname}}</permission>
+    <permission>hudson.model.Computer.Build:{{groupname}}</permission>
+    <permission>hudson.model.Computer.Configure:{{groupname}}</permission>
+    <permission>hudson.model.Computer.Connect:{{groupname}}</permission>
+    <permission>hudson.model.Computer.Create:{{groupname}}</permission>
+    <permission>hudson.model.Computer.Delete:{{groupname}}</permission>
+    <permission>hudson.model.Computer.Disconnect:{{groupname}}</permission>
+    <permission>hudson.model.Hudson.Administer:{{groupname}}</permission>
+    <permission>hudson.model.Hudson.ConfigureUpdateCenter:{{groupname}}</permission>
+    <permission>hudson.model.Hudson.Read:anonymous</permission>
+    <permission>hudson.model.Hudson.Read:{{groupname}}</permission>
+    <permission>hudson.model.Hudson.RunScripts:{{groupname}}</permission>
+    <permission>hudson.model.Hudson.UploadPlugins:{{groupname}}</permission>
+    <permission>hudson.model.Item.Build:{{groupname}}</permission>
+    <permission>hudson.model.Item.Cancel:{{groupname}}</permission>
+    <permission>hudson.model.Item.Configure:{{groupname}}</permission>
+    <permission>hudson.model.Item.Create:{{groupname}}</permission>
+    <permission>hudson.model.Item.Delete:{{groupname}}</permission>
+    <permission>hudson.model.Item.Discover:{{groupname}}</permission>
+    <permission>hudson.model.Item.Read:{{groupname}}</permission>
+    <permission>hudson.model.Item.Workspace:{{groupname}}</permission>
+    <permission>hudson.model.Run.Delete:{{groupname}}</permission>
+    <permission>hudson.model.Run.Update:{{groupname}}</permission>
+    <permission>hudson.model.View.Configure:{{groupname}}</permission>
+    <permission>hudson.model.View.Create:{{groupname}}</permission>
+    <permission>hudson.model.View.Delete:{{groupname}}</permission>
+    <permission>hudson.model.View.Read:{{groupname}}</permission>
+    <permission>hudson.scm.SCM.Tag:{{groupname}}</permission>
+  </authorizationStrategy>
+  <securityRealm class="hudson.security.LDAPSecurityRealm" plugin="ldap@1.6">
+    <server>kadaster.local:3268</server>
+    <rootDN>DC=kadaster,DC=local</rootDN>
+    <inhibitInferRootDN>false</inhibitInferRootDN>
+    <userSearchBase></userSearchBase>
+    <userSearch>sAMAccountName={0}</userSearch>
+    <managerDN>plp-jenkins</managerDN>
+    <managerPassword>RkdUSDAwQGZndGgwMA==</managerPassword>
+    <disableMailAddressResolver>false</disableMailAddressResolver>
+  </securityRealm>
   <disableRememberMe>false</disableRememberMe>
   <projectNamingStrategy class="jenkins.model.ProjectNamingStrategy$DefaultProjectNamingStrategy"/>
   <workspaceDir>${ITEM_ROOTDIR}/workspace</workspaceDir>
   <buildsDir>${ITEM_ROOTDIR}/builds</buildsDir>
+  <markupFormatter class="hudson.markup.EscapedMarkupFormatter"/>
   <jdks/>
   <viewsTabBar class="hudson.views.DefaultViewsTabBar"/>
   <myViewsTabBar class="hudson.views.DefaultMyViewsTabBar"/>
   <clouds/>
   <slaves/>
+  <quietPeriod>5</quietPeriod>
   <scmCheckoutRetryCount>0</scmCheckoutRetryCount>
   <views>
     <hudson.model.AllView>
@@ -25,28 +69,6 @@
       <filterQueue>false</filterQueue>
       <properties class="hudson.model.View$PropertyList"/>
     </hudson.model.AllView>
-    <se.diabol.jenkins.pipeline.DeliveryPipelineView plugin="delivery-pipeline-plugin@0.8.6">
-      <owner class="hudson" reference="../../.."/>
-      <name>pipeline</name>
-      <filterExecutors>false</filterExecutors>
-      <filterQueue>false</filterQueue>
-      <properties class="hudson.model.View$PropertyList"/>
-      <componentSpecs>
-        <se.diabol.jenkins.pipeline.DeliveryPipelineView_-ComponentSpec>
-          <name>Cucumber example</name>
-          <firstJob>cucumber-example-build</firstJob>
-        </se.diabol.jenkins.pipeline.DeliveryPipelineView_-ComponentSpec>
-      </componentSpecs>
-      <noOfPipelines>3</noOfPipelines>
-      <showAggregatedPipeline>false</showAggregatedPipeline>
-      <noOfColumns>1</noOfColumns>
-      <sorting>none</sorting>
-      <showAvatars>false</showAvatars>
-      <updateInterval>2</updateInterval>
-      <showChanges>false</showChanges>
-      <allowManualTriggers>false</allowManualTriggers>
-      <regexpFirstJobs/>
-    </se.diabol.jenkins.pipeline.DeliveryPipelineView>
   </views>
   <primaryView>All</primaryView>
   <slaveAgentPort>50000</slaveAgentPort>

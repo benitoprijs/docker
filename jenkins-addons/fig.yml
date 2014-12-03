@@ -1,0 +1,9 @@
+srv:
+  image: kadaster/jenkins-addons
+  volumes:
+    - /var/appdata/jenkins_home/jobs:/var/jenkins_home/jobs
+    - /var/log/jenkins:/var/jenkins_home/log
+  environment:
+    - LDAPGROUP=jap-ont-dep
+  ports:
+    - "8083:8080"

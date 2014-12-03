@@ -15,6 +15,7 @@ MAINTAINER CDaaS team
 # prepare apt-get to work behind a proxy
 RUN echo "Acquire::http::Proxy \"http://www-proxy.cs.kadaster.nl:8082\";" > /etc/apt/apt.conf
 
+# default build tools
 RUN apt-get update && apt-get install -y wget git curl zip && rm -rf /var/lib/apt/lists/*
 
 ENV JENKINS_VERSION 1.586
@@ -35,6 +36,10 @@ RUN curl -L http://updates.jenkins-ci.org/download/war/$JENKINS_VERSION/jenkins.
 ENV JENKINS_HOME /var/jenkins_home
 RUN usermod -m -d "$JENKINS_HOME" jenkins && chown -R jenkins "$JENKINS_HOME"
 
+# perform generic proxy settings for jenkins itself
+COPY proxy.xml $JENKINS_HOME/proxy.xml
+RUN chown jenkins "$JENKINS_HOME/proxy.xml"
+
 # create generic mountable jobs directory
 # this has to be done before the VOLUME instruction
 # to be able to set and keep the uid:gid on these directory's
@@ -53,6 +58,22 @@ EXPOSE 8080
 # will be used by attached slave agents:
 EXPOSE 50000
 
+# additional tools for javascript development
+# node.js
+RUN curl -sL https://deb.nodesource.com/setup | bash -
+RUN apt-get update && apt-get install -y nodejs npm && rm -rf /var/lib/apt/lists/*
+# configure proxy for npm
+RUN \
+  npm config set proxy http://www-proxy.cs.kadaster.nl:8082 \
+  && npm config set https-proxy http://www-proxy.cs.kadaster.nl:8082 \
+  && npm config set strict-ssl false
+
+# now install bower using npm
+RUN npm install -g bower
+# symlink node to nodejs because bower depends on the name node
+RUN ln -s /usr/bin/nodejs /usr/bin/node
+
+# set default user for container when running and place startup script
 USER jenkins
 COPY jenkins.sh /usr/local/bin/jenkins.sh
 

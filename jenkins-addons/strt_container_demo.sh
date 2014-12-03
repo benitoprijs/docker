@@ -7,4 +7,4 @@
 # plaats jenkins op poort 8083 op de host
 #
 
-sudo docker run -d -p 8083:8080 -e LDAPGROUP=jap-ont-dep -v /var/appdata/jenkins_home_rick/jobs:/var/jenkins_home/jobs -v /var/log/jenkins:/var/jenkins_home/log --name jenkins-addons kadaster/jenkins-addons
+sudo docker run -d -p 8084:8080 -e LDAPGROUP=ota-ont-dep -v /var/appdata/jenkins-jobs:/var/jenkins_home/jobs --name jenkins-ota kadaster/jenkins-addons
