@@ -21,7 +21,8 @@ Dit image bevat de toevoegingen voor Kadaster JaaS (Jenkins as a Service) tov he
 Er is een [fig.yml](fig.yml) configuratie gemaakt om een instantie te starten, hierin wordt een specifieke instantie gestart op poort 8083 voor de AD groep `jap-ont-dep` (de deployers groep voor customer jap in de ont omgeving), daarnaast wordt het jobs volume gemount op een host directory en wordt de jenkins log directory gemount naar /var/log/jenkins directory op de host. Werkwijze hiervoor is beschreven in het basisimage [kadaster/jenkins-kadaster](../jenkins-kadaster/README.md)
 Starten van de container gaat met de instructie:
 
-``` fig up -d
+```
+fig up -d
 ```
 
 Door het [fig.yml](fig.yml) uit te breiden met extra containers kunnen meer instanties gestart worden.
