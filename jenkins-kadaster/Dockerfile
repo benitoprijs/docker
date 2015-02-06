@@ -1,4 +1,4 @@
-FROM java:openjdk-7u65-jdk
+FROM java:openjdk-7u71-jdk
 
 MAINTAINER CDaaS team
 
@@ -16,7 +16,12 @@ MAINTAINER CDaaS team
 RUN echo "Acquire::http::Proxy \"http://www-proxy.cs.kadaster.nl:8082\";" > /etc/apt/apt.conf
 
 # default build tools
-RUN apt-get update && apt-get install -y wget git curl zip && rm -rf /var/lib/apt/lists/*
+RUN apt-get update  
+RUN apt-get install -y wget --fix-missing 
+RUN apt-get install -y git --fix-missing 
+RUN apt-get install -y zip --fix-missing 
+RUN apt-get install -y curl --fix-missing 
+RUN rm -rf /var/lib/apt/lists/*
 
 ENV JENKINS_VERSION 1.586
 RUN mkdir /usr/share/jenkins/
@@ -61,17 +66,20 @@ EXPOSE 50000
 # additional tools for javascript development
 # node.js
 RUN curl -sL https://deb.nodesource.com/setup | bash -
-RUN apt-get update && apt-get install -y nodejs npm && rm -rf /var/lib/apt/lists/*
+RUN apt-get update
+RUN apt-get install -y nodejs --fix-missing
+RUN apt-get install -y npm --fix-missing
+RUN rm -rf /var/lib/apt/lists/*
 # configure proxy for npm
 RUN \
-  npm config set proxy http://www-proxy.cs.kadaster.nl:8082 \
-  && npm config set https-proxy http://www-proxy.cs.kadaster.nl:8082 \
-  && npm config set strict-ssl false
-
+npm config set proxy http://www-proxy.cs.kadaster.nl:8082 \
+&& npm config set https-proxy http://www-proxy.cs.kadaster.nl:8082 \
+&& npm config set strict-ssl false
 # now install bower using npm
 RUN npm install -g bower
 # symlink node to nodejs because bower depends on the name node
 RUN ln -s /usr/bin/nodejs /usr/bin/node
+
 
 # set default user for container when running and place startup script
 USER jenkins
