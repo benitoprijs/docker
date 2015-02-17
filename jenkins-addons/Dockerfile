@@ -9,9 +9,7 @@ MAINTAINER CDaaS team
 USER root
 
 # add maven
-RUN apt-get update 
-RUN apt-get install -y maven --fix-missing
-RUN rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y maven --fix-missing && rm -rf /var/lib/apt/lists/*
 # install some Jenkins plugins
 # first install a community script for installing jenkins plugins and resolving dependency's
 ADD install_jenkins_plugin.sh /usr/local/bin/install_jenkins_plugin.sh
@@ -20,11 +18,9 @@ ADD install_jenkins_plugin.sh /usr/local/bin/install_jenkins_plugin.sh
 USER jenkins
 RUN ["/usr/local/bin/install_jenkins_plugin.sh", "github", "github-oauth", "cucumber-reports", "delivery-pipeline-plugin", "deployit-plugin"]
 # plugins that are not definitive yet, to speed up docker file build proces
-RUN ["/usr/local/bin/install_jenkins_plugin.sh", "disk-usage"]
-RUN ["/usr/local/bin/install_jenkins_plugin.sh", "nodejs"]
-RUN ["/usr/local/bin/install_jenkins_plugin.sh", "m2release"]
+RUN ["/usr/local/bin/install_jenkins_plugin.sh", "disk-usage", "nodejs", "m2release"]
 # create .ssh dir vor jenkins and add some authentication stuff
-RUN mkdir /var/jenkins_home/.ssh 
+RUN mkdir /var/jenkins_home/.ssh
 ADD config /var/jenkins_home/.ssh/config
 
 USER root
@@ -54,12 +50,10 @@ RUN chown jenkins:jenkins /var/jenkins_home/.gitconfig
 # change user back to jenkins to make sure the container starts with this user
 USER jenkins
 #Generate ssh key for Jenkins to connect to github with, public key is stored in the jobs directory, this can be used in github
-RUN ssh-keygen -t rsa -P "" -f /var/jenkins_home/.ssh/id_rsa 
+RUN ssh-keygen -t rsa -P "" -f /var/jenkins_home/.ssh/id_rsa
 
 USER root
-RUN mkdir /var/jenkins_home/github_key/ 
-RUN cp /var/jenkins_home/.ssh/id_rsa.pub /var/jenkins_home/github_key/id_rsa.pub
-RUN chmod -R 777 /var/jenkins_home/github_key/
+RUN mkdir /var/jenkins_home/github_key/ && cp /var/jenkins_home/.ssh/id_rsa.pub /var/jenkins_home/github_key/id_rsa.pub && chmod -R 777 /var/jenkins_home/github_key/
 
 # start customized start script, this will set the default
 # authorization group and run jenkins process as user jenkins
