@@ -11,14 +11,16 @@ USER root
 # add maven
 RUN apt-get update && apt-get install -y maven --fix-missing && rm -rf /var/lib/apt/lists/*
 # install some Jenkins plugins
-# first install a community script for installing jenkins plugins and resolving dependency's
-ADD install_jenkins_plugin.sh /usr/local/bin/install_jenkins_plugin.sh
+ADD install_jenkins_plugin.sh /var/jenkins_home/install_jenkins_plugin.sh
 
 # install plugins as user jenkins
 USER jenkins
-RUN ["/usr/local/bin/install_jenkins_plugin.sh", "github", "github-oauth", "cucumber-reports", "delivery-pipeline-plugin", "deployit-plugin"]
+RUN ["/var/jenkins_home/install_jenkins_plugin.sh", "github", "github-oauth", "cucumber-reports", "delivery-pipeline-plugin", "deployit-plugin"]
+
 # plugins that are not definitive yet, to speed up docker file build proces
-RUN ["/usr/local/bin/install_jenkins_plugin.sh", "disk-usage", "nodejs", "m2release"]
+RUN ["/var/jenkins_home/install_jenkins_plugin.sh", "disk-usage", "nodejs", "m2release"]
+
+# first install a community script for installing jenkins plugins and resolving dependency's
 # create .ssh dir vor jenkins and add some authentication stuff
 RUN mkdir /var/jenkins_home/.ssh
 ADD config /var/jenkins_home/.ssh/config
